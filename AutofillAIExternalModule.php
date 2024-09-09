@@ -201,56 +201,56 @@ class AutofillAIExternalModule extends AbstractExternalModule {
 				$field_validation_prompt = $this->createFieldValidationPrompt($field_validation);
 				$prompt = str_replace('[prompt-validation]', $field_validation_prompt, $prompt);
 
-				if (strlen($field_label) > 0) $prompt =  str_replace('[label]', $field_label, $prompt);
+				if (strlen($field_label) > 0) $prompt =  str_replace('[prompt-label]', $field_label, $prompt);
 				break;
 			case 'notes':
 				$prompt = strlen($field_prompt) == 0? $this->getProjectSettings()['llm-system-prompt-notes']: $field_prompt;
 				$prompt =  str_replace('[prompt-general]', $prompt_freetext, $prompt);
-				if (strlen($field_label) > 0) $prompt =  str_replace('[label]', $field_label, $prompt);
+				if (strlen($field_label) > 0) $prompt =  str_replace('[prompt-label]', $field_label, $prompt);
 				break;
 			case 'radio-dropdown':
 				$prompt = strlen($field_prompt) == 0? $this->getProjectSettings()['llm-system-prompt-radio-dropdown']: $field_prompt;
 				$prompt =  str_replace('[prompt-general]', $prompt_no_freetext, $prompt);
-				if (strlen($field_label) > 0) $prompt =  str_replace('[label]', $field_label, $prompt);
+				if (strlen($field_label) > 0) $prompt =  str_replace('[prompt-label]', $field_label, $prompt);
 				if (strlen($field_enum) > 0) {
 					$field_enum = str_replace("\\n", "\n", $field_enum);
-					$prompt =  str_replace('[enum]', "\n\n" . $field_enum . "\n\n", $prompt);
+					$prompt =  str_replace('[prompt-enum]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
 				}
 				break;
 			case 'checkbox':
 				$prompt = strlen($field_prompt) == 0? $this->getProjectSettings()['llm-system-prompt-checkbox']: $field_prompt;
 				$prompt =  str_replace('[prompt-general]', $prompt_no_freetext, $prompt);
-				if (strlen($field_label) > 0) $prompt =  str_replace('[label]', $field_label, $prompt);
+				if (strlen($field_label) > 0) $prompt =  str_replace('[prompt-label]', $field_label, $prompt);
 				if (strlen($field_enum) > 0) {
 					$field_enum = str_replace("\\n", "\n", $field_enum);
-					$prompt =  str_replace('[enum]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
+					$prompt =  str_replace('[prompt-enum]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
 				}
 				break;
 			case 'yesno':
 				$prompt = strlen($field_prompt) == 0? $this->getProjectSettings()['llm-system-prompt-yesno']: $field_prompt;
 				$prompt =  str_replace('[prompt-general]', $prompt_no_freetext, $prompt);
-				if (strlen($field_label) > 0) $prompt =  str_replace('[label]', $field_label, $prompt);
+				if (strlen($field_label) > 0) $prompt =  str_replace('[prompt-label]', $field_label, $prompt);
 				if (strlen($field_enum) > 0) {
 					$field_enum = str_replace("\\n", "\n", $field_enum);
-					$prompt =  str_replace('[enum]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
+					$prompt =  str_replace('[prompt-enum]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
 				}
 				break;
 			case 'truefalse':
 				$prompt = strlen($field_prompt) == 0? $this->getProjectSettings()['llm-system-prompt-truefalse']: $field_prompt;
 				$prompt =  str_replace('[prompt-general]', $prompt_no_freetext, $prompt);
-				if (strlen($field_label) > 0) $prompt =  str_replace('[label]', $field_label, $prompt);
+				if (strlen($field_label) > 0) $prompt =  str_replace('[prompt-label]', $field_label, $prompt);
 				if (strlen($field_enum) > 0) {
 					$field_enum = str_replace("\\n", "\n", $field_enum);
-					$prompt =  str_replace('[enum]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
+					$prompt =  str_replace('[prompt-enum]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
 				}
 				break;
 			case 'slider':
 				$prompt = strlen($field_prompt) == 0? $this->getProjectSettings()['llm-system-prompt-slider']: $field_prompt;
 				$prompt =  str_replace('[prompt-general]', $prompt_no_freetext, $prompt);
-				if (strlen($field_label) > 0) $prompt =  str_replace('[label]', $field_label, $prompt);
+				if (strlen($field_label) > 0) $prompt =  str_replace('[prompt-label]', $field_label, $prompt);
 				if (strlen($field_enum) > 0) {
 					$field_enum = str_replace("\\n", "\n", $field_enum);
-					$prompt =  str_replace('[enum]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
+					$prompt =  str_replace('[prompt-enum]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
 				}
 				break;
 			default:

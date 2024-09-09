@@ -31,24 +31,39 @@ The configuration is done exclusively within the project context. The following 
 - *javascript-debug*: Output debug information to the browser console (enable these **only** during testing!)
 - *llm-provider-desc*: Descriptive label for the used Large Language Model (LLM) provider
 - *llm-provider*: Specific LLM provider API
-- *llm-mock-mode*: Bypass the LLM API and simulate its real behavior
-- *llm-api-key*: API key
+    - currently the following APIs are implemented:
+        - OpenAI (*GPT-3.5-turbo*, *GPT-4* or newer)
+        - Google (recent models like *Gemini 1.5 Flash*)
+- *llm-mock-mode*: Bypass the LLM API and simulate its real behavior by answering to the great questions of life, the universe and everything
+- *llm-api-key*: API key for the chosen provider
 - *llm-model-name*: Model name (technical)
+    - external module was sucessfully tested with
+        - `gpt-4o-mini`
+        - `gemini-1.5-flash`
 - *llm-pricing-input-tokens*: Pricing: USD / 1M input tokens
 - *llm-pricing-output-tokens*: Pricing: USD / 1M output tokens
-- *llm-pricing-vat*: VAT (in percent)
-- *llm-local-currency*: Local currency
-- *llm-local-currency-rate*: Exchange rate (in local currency per USD)
+    - take this from the pricing pages of the providers
+- *llm-pricing-vat*: VAT (in percent) if applicably, enter "0" if not
+- *llm-local-currency*: Local currency, USD is default
+- *llm-local-currency-rate*: Exchange rate (in local currency per USD), 1.00 is default
 - *llm-total-costs-usd*: Total cumulative costs (in USD)
-- *llm-system-prompt-freetext*: General LLM system prompt
+- *llm-system-prompt-freetext*: General LLM system prompt for notes (freetext), can left empty if wanted
 - *llm-system-prompt-no-freetext*: Additional LLM system prompt for structured fields (everything except notes)
+    - could be something like: *Act like a computer interface. Response strictly with facts and do not include any explanation. Do not enumerate the results. Every result in a new line.*
 - *llm-system-prompt-text*: Specific LLM system prompt for *text*
+    - cound be something like: *[prompt-general] A list of items. Only values. [prompt-validation]*
+        - *[prompt-general]* is replaced by *llm-system-prompt-no-freetext*
+        - *[prompt-validation]* creates a special prompt which helps the LLM to respect REDCap's field validation
 - *llm-system-prompt-notes*: Specific LLM system prompt for *notes*
+    - could consist only of *[prompt-general]*
 - *llm-system-prompt-radio-dropdown*: Specific LLM system prompt for *radio* or *dropdown*
+    -  effective prompts look like this: *[prompt-general] Response strictly with the codes in the first column of this table and nothing else:\n[prompt-enum]\nOnly codes!*
 - *llm-system-prompt-checkbox*: Specific LLM system prompt for *checkbox*
 - *llm-system-prompt-yesno*: Specific LLM system prompt for *yesno*
 - *llm-system-prompt-truefalse*: Specific LLM system prompt for *truefalse*
+    -  same hint as for *radio* or *dropdown*
 - *llm-system-prompt-slider*: Specific LLM system prompt for *slider*
+    - a suitable prompt could look like this: *[prompt-general] Response with an integer number between 0 and 100. 0 means minimum and 100 maximum.*
 
 ## Action Tags
 
