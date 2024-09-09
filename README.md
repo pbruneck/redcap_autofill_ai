@@ -1,7 +1,5 @@
 # Autofill AI External Module
 
-# Autofill AI
-
 Autofill AI integrates large language models (LLM) into REDCap to generate realistic, context-sensitive test data for instruments using customizable prompts. This external module is also intended to simplify the creation of complex test data, such as free text in notes.
 
 There are currently three places where the module interacts with REDCap:
