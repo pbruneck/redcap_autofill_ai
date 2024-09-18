@@ -14,9 +14,29 @@ There are currently three places where the module interacts with REDCap:
 
 **Feature and pull requests** (against _main_) are welcome and highly appreciated!
 
+## Features
+
+- integrates two popular generative AI APIs (OpenAI, Google) to create synthetic test data
+- uses a multi-step prompting approach to keep user prompts short and concise
+- support for all basic REDCap data types (text, notes, radio, drop-down, checkbox, slider, yes/no, true/false)
+- supports piping and introduces "smart variables" to concatenate prompts and other metadata such as choices
+- prompt engineering user interface as part of the Designer
+- instrument-level test option during data entry
+- test data generation for multiple datasets using an additional module page (*factory*)
+
+![multi-stage prompting](img/multi-stage-prompting.png)
+
+*multi-stage prompting approach*
+
+## Known Issues / Limitations
+
+- initially developed with REDCap's 'classic' data collection format in mind, this external module may not work as expected with active longitudinal data collection or repeated instruments
+- Autofill AI factory for mass data generation is still rudimentarily implemented
+- matrix field groups are not yet supported
+
 ## Requirements
 
-- REDCAP 13.3.0 or newer
+- REDCap 13.3.0 or newer
 - PHP 7.4.0 or newer
 
 ## Installation
@@ -67,7 +87,7 @@ The configuration is done exclusively within the project context. The following 
 
 ## Action Tags
 
-### ### @AUTOFILL-AI
+### @AUTOFILL-AI
 
 This action tag contains the LLM prompt, such as `@AUTOFILL-AI='What is the shortest distance in miles (rounded on 100 miles) between Seattle and Florida?'`. The prompt can also be created and/or modified using the robot icon in the forms designer.
 
@@ -89,7 +109,9 @@ Todo: complete documentation
 
 This is a new, module specfic page intended to mass complete forms with LLM prompt. Currently, only a simple operation model using the prompts in the action tag `@AUTOFILL-AI` is supported:
 
-![Element context without overwriting](img/factory_element_context_1.svg) *Operation mode Data Element Context*: Context is limited to the content of the Action Tag @AUTOFILL-AI.
+![Element context without overwriting](img/factory_element_context_1.svg)
+
+*Operation mode Data Element Context*: Context is limited to the content of the Action Tag @AUTOFILL-AI.
 
 Further operation model will be added soon.
 
