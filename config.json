@@ -130,31 +130,31 @@
       },
       {
          "key": "llm-system-prompt-radio-dropdown",
-         "name": "Specific LLM system prompt for \"radio\" or \"dropdown\". You can pipe [prompt-general], [prompt-label], and [prompt-enum] of the current field into.",
+         "name": "Specific LLM system prompt for \"radio\" or \"dropdown\". You can pipe [prompt-general], [prompt-label], and [prompt-choices] of the current field into.",
          "type": "text",
-         "default": "[prompt-general] Response strictly with the codes in the first column of this table and nothing else:\n[prompt-enum]\nOnly codes!"
+         "default": "[prompt-general] Response strictly with the codes in the first column of this table and nothing else:\n[prompt-choices]\nOnly codes!"
       },
       {
          "key": "llm-system-prompt-checkbox",
-         "name": "Specific LLM system prompt for \"checkbox\". You can pipe [prompt-general], [prompt-label], and [prompt-enum] of the current field into.",
+         "name": "Specific LLM system prompt for \"checkbox\". You can pipe [prompt-general], [prompt-label], and [prompt-choices] of the current field into.",
          "type": "text",
-         "default": "[prompt-general] Response strictly with the codes in the first column of this table and nothing else:\n[prompt-enum]\nOnly codes!"
+         "default": "[prompt-general] Response strictly with the codes in the first column of this table and nothing else:\n[prompt-choices]\nOnly codes!"
       },
       {
          "key": "llm-system-prompt-yesno",
-         "name": "Specific LLM system prompt for \"yesno\". You can pipe [prompt-general], [prompt-label], and [prompt-enum] of the current field into.",
+         "name": "Specific LLM system prompt for \"yesno\". You can pipe [prompt-general], [prompt-label], and [prompt-choices] of the current field into.",
          "type": "text",
-         "default": "[prompt-general] Response strictly with the codes in the first column of this table and nothing else:\n[prompt-enum]\nOnly codes!"
+         "default": "[prompt-general] Response strictly with the codes in the first column of this table and nothing else:\n[prompt-choices]\nOnly codes!"
       },
       {
          "key": "llm-system-prompt-truefalse",
-         "name": "Specific LLM system prompt for \"truefalse\". You can pipe [prompt-general], [prompt-label], and [prompt-enum] of the current field into.",
+         "name": "Specific LLM system prompt for \"truefalse\". You can pipe [prompt-general], [prompt-label], and [prompt-choices] of the current field into.",
          "type": "text",
-         "default": "[prompt-general] Response strictly with the codes in the first column of this table and nothing else:\n[prompt-enum]\nOnly codes!"
+         "default": "[prompt-general] Response strictly with the codes in the first column of this table and nothing else:\n[prompt-choices]\nOnly codes!"
       },
       {
          "key": "llm-system-prompt-slider",
-         "name": "Specific LLM system prompt for \"slider\". You can pipe [prompt-general], [prompt-label], and [prompt-enum] of the current field into.",
+         "name": "Specific LLM system prompt for \"slider\". You can pipe [prompt-general], [prompt-label], and [prompt-choices] of the current field into.",
          "type": "text",
          "default": "[prompt-general] Response with an integer number between 0 and 100. 0 means minimum and 100 maximum."
       }

@@ -214,7 +214,7 @@ class AutofillAIExternalModule extends AbstractExternalModule {
 				if (strlen($field_label) > 0) $prompt =  str_replace('[prompt-label]', $field_label, $prompt);
 				if (strlen($field_enum) > 0) {
 					$field_enum = str_replace("\\n", "\n", $field_enum);
-					$prompt =  str_replace('[prompt-enum]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
+					$prompt =  str_replace('[prompt-choices]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
 				}
 				break;
 			case 'checkbox':
@@ -223,7 +223,7 @@ class AutofillAIExternalModule extends AbstractExternalModule {
 				if (strlen($field_label) > 0) $prompt =  str_replace('[prompt-label]', $field_label, $prompt);
 				if (strlen($field_enum) > 0) {
 					$field_enum = str_replace("\\n", "\n", $field_enum);
-					$prompt =  str_replace('[prompt-enum]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
+					$prompt =  str_replace('[prompt-choices]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
 				}
 				break;
 			case 'yesno':
@@ -232,7 +232,7 @@ class AutofillAIExternalModule extends AbstractExternalModule {
 				if (strlen($field_label) > 0) $prompt =  str_replace('[prompt-label]', $field_label, $prompt);
 				if (strlen($field_enum) > 0) {
 					$field_enum = str_replace("\\n", "\n", $field_enum);
-					$prompt =  str_replace('[prompt-enum]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
+					$prompt =  str_replace('[prompt-choices]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
 				}
 				break;
 			case 'truefalse':
@@ -241,7 +241,7 @@ class AutofillAIExternalModule extends AbstractExternalModule {
 				if (strlen($field_label) > 0) $prompt =  str_replace('[prompt-label]', $field_label, $prompt);
 				if (strlen($field_enum) > 0) {
 					$field_enum = str_replace("\\n", "\n", $field_enum);
-					$prompt =  str_replace('[prompt-enum]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
+					$prompt =  str_replace('[prompt-choices]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
 				}
 				break;
 			case 'slider':
@@ -250,7 +250,7 @@ class AutofillAIExternalModule extends AbstractExternalModule {
 				if (strlen($field_label) > 0) $prompt =  str_replace('[prompt-label]', $field_label, $prompt);
 				if (strlen($field_enum) > 0) {
 					$field_enum = str_replace("\\n", "\n", $field_enum);
-					$prompt =  str_replace('[prompt-enum]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
+					$prompt =  str_replace('[prompt-choices]', "\n\ncode,fact\n" . $field_enum . "\n\n", $prompt);
 				}
 				break;
 			default:
