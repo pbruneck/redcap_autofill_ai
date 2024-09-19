@@ -297,12 +297,10 @@ async function autoFillFactoryAIPostRequest(data) {
     });
 }
 
-async function autoFillAIFactoryMultiplePostRequests(record_list, field_list, overwrite_flag) {
+async function autoFillAIFactoryMultiplePostRequests(records, fields, overwrite_flag) {
     const maxParallelRequests = 3;
     const promises = [];
 
-	var records = JSON.parse(record_list);
-	var fields = JSON.parse(field_list);
 	var fields_per_record = new Map;
 	records.forEach((record) => {
 		fields_per_record.set(record, fields.length);

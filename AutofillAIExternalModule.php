@@ -497,6 +497,96 @@ class AutofillAIExternalModule extends AbstractExternalModule {
 		);
 	}
 
+	function promptDependencyCheck($fieldsWithPrompts) {
+		$graph = [];
+		foreach ($fieldsWithPrompts as $field => $prompt) {
+			$bracketed_fields = getBracketedFields($prompt, true, true, true);
+			if (!empty($bracketed_fields)) {
+				$refs = [];
+				foreach ($bracketed_fields as $bracketed_field => $none) {
+					array_push($refs, $bracketed_field);
+				}
+				$graph += [$field => $refs];
+			} else {
+				$graph += [$field => []];
+			}
+		}
+
+		$result = $this->kahnDependencySort($graph);
+		$orderedFields = $result['orderedFields'];
+		$cyclicFieldsHTML = $result['cyclicFields'];
+
+		$orderedFieldsWithPrompts = [];
+		foreach ($orderedFields as $orderedField) {
+			$orderedFieldsWithPrompts += [$orderedField => $fieldsWithPrompts[$orderedField]];
+		}
+
+		return array('fieldsWithPrompts' => $orderedFieldsWithPrompts, 'cyclicFields' => $cyclicFieldsHTML);
+	}
+
+	function kahnDependencySort($graph) {
+		$in = [];
+
+		foreach ($graph as $node => $neighbors) {
+			if (!isset($in[$node])) {
+				$in[$node] = 0;
+			}
+
+			foreach ($neighbors as $neighbor) {
+				if (!isset($in[$neighbor])) {
+					$in[$neighbor] = 0;
+				}
+				$in[$neighbor]++;
+			}
+		}
+
+		$queue = [];
+		foreach ($in as $node => $degree) {
+			if ($degree == 0) {
+				array_push($queue, $node);
+			}
+		}
+
+		$dependencyOrder = [];
+
+		// Kahn's algorithm
+		while (!empty($queue)) {
+			$node = array_shift($queue);
+			$dependencyOrder[] = $node;
+
+			foreach ($graph[$node] as $neighbor) {
+				$in[$neighbor]--;
+				if ($in[$neighbor] == 0) {
+					array_push($queue, $neighbor);
+				}
+			}
+		}
+
+		// if not all nodes are covered at least one cycle exists
+		if (count($dependencyOrder) !== count($graph)) {
+			$cycleNodes = [];
+
+			// not sorted nodes are cyclic
+			foreach ($graph as $node => $neighbors) {
+				if (!in_array($node, $dependencyOrder)) {
+					$cycleNodes[] = $node;
+				}
+			}
+
+			// create a list of affected nodes
+			$cycleMessage = "";
+			foreach ($cycleNodes as $cycleNode) {
+				foreach ($graph[$cycleNode] as $neighbor) {
+					if (in_array($neighbor, $cycleNodes)) {
+						$cycleMessage .= $cycleNode . " &rarr; " . $neighbor . "<br>";
+					}
+				}
+			}
+		}
+
+		return array('orderedFields' => array_reverse($dependencyOrder), 'cyclicFields' => $cycleMessage);
+	}
+
 	function ajax_handler_load_prompt($project_id, $field_name) {
 		$meta = $this->getMetaDataExt($project_id, $field_name);
 
