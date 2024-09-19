@@ -9,6 +9,7 @@ renderPageTitle("<i class=\"fas fa-robot\"></i>&nbsp;Autofill AI Factory");
 ?>
 
 <?= $module->initializeJavascriptModuleObject() ?>
+<?= $module->tt_transferToJavascriptModuleObject() ?>
 <script>const module_autofill_ai = <?= $module->getJavascriptModuleObjectName() ?>;</script>
 <script>var autofillAIHandlerPath="<?php print $module->getUrl('autofill_ai_handler.php'); ?>";</script>
 <script src="<?php print $module->getUrl('js/autofill-ai.js'); ?>" defer></script>
@@ -20,6 +21,9 @@ renderPageTitle("<i class=\"fas fa-robot\"></i>&nbsp;Autofill AI Factory");
     <br>&nbsp;<br>
     <div class="yellow">
         <?=$module->tt("ui_factory_outlook")?>
+    </div>
+    <div id="autofill-ai-factory-cyclic-dependencies" class="red" style="display:none;">
+        <span id="autofill-ai-factory-cyclic-fields"></span>
     </div>
     <br>
 	<a href="javascript:;" onclick="$('#moreInstructions').toggle('fade');" style="text-decoration:underline;">
@@ -86,14 +90,19 @@ foreach ($data as $field => $value) {
     // print($record . " / " . $field . " / " . $prompt . "<br>");
 }
 
+$result = $module->promptDependencyCheck($fieldsWithPrompts);
+$orderedFieldsWithPrompts = $result['fieldsWithPrompts'];
+$cyclicFields = $result['cyclicFields'];
+
 $records_json = json_encode(array_map('trim', array_values($records)));
-$fields_json = json_encode(array_keys($fieldsWithPrompts));
+$fields_json = json_encode(array_keys($orderedFieldsWithPrompts));
 
 ?>
 
 <script>
-var records_to_autofill = '<?php print($records_json); ?>';
-var fields_to_autofill = '<?php print($fields_json); ?>';
+var records_to_autofill = <?=$records_json?>;
+var fields_to_autofill = <?=$fields_json?>;
+var cyclic_fields = '<?=$cyclicFields?>';
 
 function autofill_ai_factory_mode() {
     var mode = $('#autofill-ai-factory-mode').find(":selected").val();
@@ -118,6 +127,13 @@ function autofill_ai_factory_mode() {
         case "1":
         case "3":
             table_visibility(true);
+            if (cyclic_fields !== "") {
+                $('#autofill-ai-factory-cyclic-fields').html(module_autofill_ai.tt('ui_factory_cyclic_dependencies', cyclic_fields));
+                $('#autofill-ai-factory-cyclic-dependencies').show();
+            } else {
+                $('#autofill-ai-factory-cyclic-dependencies').hide();
+                $('#autofill-ai-factory-cyclic-fields').html('');
+            }
             $('#autofill-ai-factory-no-selection').hide();
             $('#autofill-ai-factory-not-yet-implemented').hide();
             break;
