@@ -77,7 +77,7 @@ The configuration is done exclusively within the project context. The following 
 - *llm-system-prompt-notes*: Specific LLM system prompt for *notes*
     - could consist only of *[prompt-general]*
 - *llm-system-prompt-radio-dropdown*: Specific LLM system prompt for *radio* or *dropdown*
-    -  effective prompts look like this: *[prompt-general] Response strictly with the codes in the first column of this table and nothing else:\n[prompt-enum]\nOnly codes!*
+    -  effective prompts look like this: *[prompt-general] Response strictly with the codes in the first column of this table and nothing else:\n[prompt-choices]\nOnly codes!*
 - *llm-system-prompt-checkbox*: Specific LLM system prompt for *checkbox*
 - *llm-system-prompt-yesno*: Specific LLM system prompt for *yesno*
 - *llm-system-prompt-truefalse*: Specific LLM system prompt for *truefalse*
