@@ -329,7 +329,7 @@ class AutofillAIExternalModule extends AbstractExternalModule {
 						</div>
 						<div style="display: flex; gap: 10px;">
 							<div style="flex: 0 1 auto; padding: 20px; box-sizing: border-box;">
-								<button id="autofill_ai_workbench_edit_system_prompt_button" class="jqbuttonmed ui-button ui-corner-all ui-widget" style="padding:.4em 1em;text-align:left;"><i style="color:#608050;" class="fa-solid fa-unlock"></i>&nbsp;<?=$this->tt("ui_dialog_edit_system_prompt_btn")?></button>
+								<button id="autofill_ai_workbench_edit_system_prompt_button" class="jqbuttonmed ui-button ui-corner-all ui-widget" style="padding:.4em 1em;text-align:left;"></button>
 							</div>
 							<div style="flex: 1; padding: 20px; box-sizing: border-box;">
 								<span class="logicTesterRecordDropdownLabel"><?=$this->tt("ui_dialog_record_dd")?></span>
@@ -518,7 +518,9 @@ class AutofillAIExternalModule extends AbstractExternalModule {
 
 		$orderedFieldsWithPrompts = [];
 		foreach ($orderedFields as $orderedField) {
-			$orderedFieldsWithPrompts += [$orderedField => $fieldsWithPrompts[$orderedField]];
+			if (array_key_exists($orderedField, $fieldsWithPrompts)) {
+				$orderedFieldsWithPrompts += [$orderedField => $fieldsWithPrompts[$orderedField]];
+			}
 		}
 
 		return array('fieldsWithPrompts' => $orderedFieldsWithPrompts, 'cyclicFields' => $cyclicFieldsHTML);
@@ -624,16 +626,20 @@ class AutofillAIExternalModule extends AbstractExternalModule {
 		$status = $this->query('UPDATE redcap_metadata SET misc = ? WHERE project_id = ? AND field_name = ?', [$new_field_annotation, $project_id, $field_name]);
 		// TODO: check status of db update
 
-		if ($meta['field_type'] == 'notes') {
-			$this->setProjectSetting('llm-system-prompt-freetext', $system_prompt);
-		} else {
-			$this->setProjectSetting('llm-system-prompt-no-freetext', $system_prompt);
+		if ($system_prompt !== 0) {
+			if ($meta['field_type'] == 'notes') {
+				$this->setProjectSetting('llm-system-prompt-freetext', $system_prompt);
+			} else {
+				$this->setProjectSetting('llm-system-prompt-no-freetext', $system_prompt);
+			}
 		}
 
-		$field_type_label = $meta['field_type'];
-		if ($meta['field_type'] == 'radio' || $meta['field_type'] == 'dropdown') $field_type_label = 'radio-dropdown';
+		if ($field_prompt !== 0) {
+			$field_type_label = $meta['field_type'];
+			if ($meta['field_type'] == 'radio' || $meta['field_type'] == 'dropdown') $field_type_label = 'radio-dropdown';
 
-		$this->setProjectSetting('llm-system-prompt-' . $field_type_label, $field_prompt);
+			$this->setProjectSetting('llm-system-prompt-' . $field_type_label, $field_prompt);
+		}
 
 		return array('status' => 1);
 	}
@@ -897,7 +903,7 @@ class AutofillAIExternalModule extends AbstractExternalModule {
 			$record_data = \Records::getData('array', $record_id, $field_name);
 
 			if (!empty($record_data))
-				return array('result' => $field_name, 'field_type' => '', 'value' =>'', 'record_id' => $record_id, 'request_number' => $request_number, 'success' => false);
+				return array('result' => $field_name, 'field_type' => '', 'value' => 0, 'record_id' => $record_id, 'request_number' => $request_number, 'success' => false);
 		}
 
 		$data_logging_flag = true;
@@ -911,7 +917,7 @@ class AutofillAIExternalModule extends AbstractExternalModule {
 		$user_prompt = $this->getValueInQuotesActionTag($meta['field_annotation']);
 
 		if ($user_prompt == '')
-			return array('result' => $field_name, 'field_type' => '', 'value' =>'missing user prompt', 'record_id' => $record_id, 'request_number' => $request_number, 'success' => false);
+			return array('result' => $field_name, 'field_type' => '', 'value' => $this->tt("ui_factory_error_missing_user_prompt"), 'record_id' => $record_id, 'request_number' => $request_number, 'success' => false);
 
 		$user_prompt = str_replace('&quot;', '"', $user_prompt);
 		$user_prompt = str_replace('&apos;', '\'', $user_prompt);
@@ -932,7 +938,7 @@ class AutofillAIExternalModule extends AbstractExternalModule {
 		$user_prompt = $this->resolve_bracketed_fields($project_id, $field_name, $record_id, $user_prompt);
 
 		$result = $this->llm_request($this->getProjectSettings()['llm-provider'], $system_prompt, $user_prompt);
-		if (!$result['success']) return array('result' => $field_name, 'field_type' => '', 'value' =>'llm request failed', 'record_id' => $record_id, 'request_number' => $request_number, 'success' => false);
+		if (!$result['success']) return array('result' => $field_name, 'field_type' => '', 'value' => $this->tt("ui_factory_error_llm_request_failed"), 'record_id' => $record_id, 'request_number' => $request_number, 'success' => false);
 
 		$response = $result['response'];
 		$response_header = $result['stats'];
@@ -958,7 +964,7 @@ class AutofillAIExternalModule extends AbstractExternalModule {
 			if (isset($check['ids'][$record_id])) {
 				$redcap_import_check = array('status'=> 'valid', 'value' => $response, 'label' => "");
 			} else {
-				return array('result' => $field_name, 'field_type' => '', 'value' =>'validation failed', 'record_id' => $record_id, 'request_number' => $request_number, 'success' => false);
+				return array('result' => $field_name, 'field_type' => '', 'value' => $this->tt("ui_factory_error_validation_failed"), 'record_id' => $record_id, 'request_number' => $request_number, 'success' => false);
 			}
 		} else {
 			foreach (explode(PHP_EOL, $response) as $line) {
@@ -1003,7 +1009,7 @@ class AutofillAIExternalModule extends AbstractExternalModule {
 						$redcap_import_check = array('status'=> 'valid', 'value' => trim($line), 'label' => trim($label));
 					}
 				} else {
-					return array('result' => $field_name, 'field_type' => '', 'value' =>'validation failed', 'record_id' => $record_id, 'request_number' => $request_number, 'success' => false);
+					return array('result' => $field_name, 'field_type' => '', 'value' => $this->tt("ui_factory_error_validation_failed"), 'record_id' => $record_id, 'request_number' => $request_number, 'success' => false);
 				}
 
 				if ($meta['field_type'] != 'checkbox') break;
@@ -1022,7 +1028,7 @@ class AutofillAIExternalModule extends AbstractExternalModule {
 			if (isset($check['ids'][$record_id])) {
 				$redcap_import_check = array('status'=> 'valid', 'value' => $value_checkbox, 'label' => $label_checkbox);
 			} else {
-				return array('result' => $field_name, 'field_type' => '', 'value' =>'validation failed', 'record_id' => $record_id, 'request_number' => $request_number, 'success' => false);
+				return array('result' => $field_name, 'field_type' => '', 'value' => $this->tt("ui_factory_error_validation_failed"), 'record_id' => $record_id, 'request_number' => $request_number, 'success' => false);
 			}
 		}
 
