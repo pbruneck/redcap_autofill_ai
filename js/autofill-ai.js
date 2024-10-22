@@ -63,8 +63,27 @@ function openAutofillAIWorkbench(field_name) {
 			$('#autofill_ai_workbench_label').html(json_data.field_label);
 			$('#autofill_ai_workbench_enum').html(json_data.field_enum.replace(/\\n/g, '<br>'));
 			// console.log(json_data.field_enum);
+			$('#autofill_ai_workbench_record_dropdown').val("");
 			$('#autofill_ai_workbench_system_prompt_div').hide();
-			$('#autofill_ai_workbench_edit_system_prompt_button').attr('onclick', '(function(){$(\'#autofill_ai_workbench_system_prompt_div\').show();})();return false;');
+			$('#autofill_ai_workbench_edit_system_prompt_button').html(
+				'<i style="color:#608050;" class="fa-solid fa-unlock"></i>&nbsp;' +
+				module_autofill_ai.tt("ui_dialog_edit_system_prompts_btn")
+			);
+			$('#autofill_ai_workbench_edit_system_prompt_button').off().on('click', function(){
+				if ($('#autofill_ai_workbench_system_prompt_div').is(':visible')) {
+					$('#autofill_ai_workbench_edit_system_prompt_button').html(
+						'<i style="color:#608050;" class="fa-solid fa-unlock"></i>&nbsp;' +
+						module_autofill_ai.tt("ui_dialog_edit_system_prompts_btn")
+					);
+					$('#autofill_ai_workbench_system_prompt_div').hide();
+				} else {
+					$('#autofill_ai_workbench_edit_system_prompt_button').html(
+						'<i style="color:#608050;" class="fa-solid fa-lock"></i>&nbsp;' +
+						module_autofill_ai.tt("ui_dialog_hide_system_prompts_btn")
+					);
+					$('#autofill_ai_workbench_system_prompt_div').show();
+				}
+			});
 			$('#autofill_ai_workbench_generate_button').attr('onclick', 'autofillAIGenerate(\'' + field_name + '\', $(\'#autofill_ai_workbench_record_dropdown\').find(":selected").val());');
 			$('#autofill_ai_workbench').dialog({ bgiframe: true, modal: true, width: 810, open: function(){fitDialog(this)},
 				buttons: [{
@@ -77,7 +96,7 @@ function openAutofillAIWorkbench(field_name) {
 							saveAutofillAIWorkbench(field_name, $('#autofill_ai_workbench_prompt').val(), $(this),
 								$('#autofill_ai_workbench_system_prompt').val(), $('#autofill_ai_workbench_field_type_prompt').val());
 						} else {
-							saveAutofillAIWorkbench(field_name, $('#autofill_ai_workbench_prompt').val(), $(this), null, null);
+							saveAutofillAIWorkbench(field_name, $('#autofill_ai_workbench_prompt').val(), $(this), 0, 0);
 						}
 					}
 				}]
@@ -188,6 +207,8 @@ function autoFillAIRow(tr, field_type, field_value)
 			}
 			break;
 		case 'radio':
+		case 'yesno':
+		case 'truefalse':
 			// regular radio buttons only
 			var radios = $(tr).find("input[type=radio]").filter(":visible");
 			var radios_checked = $(tr).find("input[type=radio]:checked");
@@ -301,14 +322,16 @@ async function autoFillAIFactoryMultiplePostRequests(records, fields, overwrite_
     const maxParallelRequests = 3;
     const promises = [];
 
+    // deactivate generate button during operation
+	$('#autofill-ai-factory-generate-btn').attr('disabled', true);
+
 	var fields_per_record = new Map;
 	records.forEach((record) => {
 		fields_per_record.set(record, fields.length);
 	});
 
 	for (const record of records) {
-		$("span[span_id='" + record + "']").html('<i spinner_id="' + record + '" class="fa-solid fa-spinner fa-spin-pulse"></i>');
-		// $("span[span_id='" + record + "']").html('');
+		$("i[spinner_id='" + record + "']").show();
 	}
 
 	var request_number = 0;
@@ -335,18 +358,19 @@ async function autoFillAIFactoryMultiplePostRequests(records, fields, overwrite_
 					results.forEach((obj, index) => {
 						if (typeof(obj) == 'object') {
 							fields_per_record.set(obj.record_id, fields_per_record.get(obj.record_id) - 1);
+							console.log(obj.record_id, 'remaining:', fields_per_record.get(obj.record_id));
 							if (fields_per_record.get(obj.record_id) == 0)
-								$("i[spinner_id='" + obj.record_id + "']").remove();
+								$("i[spinner_id='" + obj.record_id + "']").hide();
 
 							if (obj.success) {
 								// obj.value can be array or string
 								let values = Array.isArray(obj.value) ? obj.value.join(', ') : obj.value;
 
-								$("span[span_id='" + obj.record_id + "']").html(obj.result + ': ' + values + '<br>' + $("span[span_id='" + obj.record_id + "']").html());
+								$("span[span_id='" + obj.record_id + "']").html($("span[span_id='" + obj.record_id + "']").html() + obj.result + ': ' + values + '<br>');
 							} else {
 								if (typeof obj.value === 'string') {
 									console.log('ERROR', obj.record_id, obj.result, obj.value);
-									$("span[span_id='" + obj.record_id + "']").html('<span style="color:red">' + obj.result + ' (ERROR): ' + obj.value + '</span><br>' + $("span[span_id='" + obj.record_id + "']").html());
+									$("span[span_id='" + obj.record_id + "']").html($("span[span_id='" + obj.record_id + "']").html() + '<span style="color:red">' + obj.result + ' (ERROR): ' + obj.value + '</span><br>');
 								}
 							}
 						}
@@ -368,9 +392,13 @@ async function autoFillAIFactoryMultiplePostRequests(records, fields, overwrite_
 	fields_per_record.forEach((counter, record) => {
 		if (counter > 0) {
 			$("span[span_id='" + record + "']").append('<br><span style="color:red;">' + module_autofill_ai.tt('js_error_generating_results') + '</span>');
-			$("i[spinner_id='" + record + "']").remove();
+			$("i[spinner_id='" + record + "']").hide();
 		}
 	});
 
+    // modify generate button into a reload button
+	$('#autofill-ai-factory-generate-btn').html(module_autofill_ai.tt('ui_factory_reload_btn'));
+	$('#autofill-ai-factory-generate-btn').off().on("click", function() { location.reload(); });
+	$('#autofill-ai-factory-generate-btn').attr('disabled', false);
 }
 

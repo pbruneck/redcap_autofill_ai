@@ -14,7 +14,7 @@ renderPageTitle("<i class=\"fas fa-robot\"></i>&nbsp;Autofill AI Factory");
 <script>var autofillAIHandlerPath="<?php print $module->getUrl('autofill_ai_handler.php'); ?>";</script>
 <script src="<?php print $module->getUrl('js/autofill-ai.js'); ?>" defer></script>
 
-<div id="working"><i class="fa-solid fa-spinner fa-spin-pulse me-3"></i><span>Working …</span></div>
+<!-- <div id="working"><i class="fa-solid fa-spinner fa-spin-pulse me-3"></i><span>Working …</span></div> -->
 
 <p style="margin-top:0px;">
     <?=$module->tt("ui_factory_intro")?>
@@ -283,13 +283,13 @@ foreach ($records as $record) {
                     <td style="cursor:initial;" align="center">
                         <div style="text-align:center;width:100px;"><b><?php print($record); ?></b></div>
                     </td>
-                    <td style="cursor:initial;">
+                    <td style="cursor:initial;white-space:normal;">
                         <div class="autofill-ai-overwrite-denied" style="width:400px;">
 <?php
     print(sprintf("%d/%d field(s) filled out", $n, $nmax));
     if ($nmax - $n > 0) {
         print(sprintf("<br><b>%d field(s) need to be filled out:</b><br>", $nmax - $n));
-        print('<em>' . implode(",", $empty_fields) . '</em>');
+        print('<em>' . implode(", ", $empty_fields) . '</em>');
         $button_flag = true;
     }
 ?>
@@ -298,14 +298,15 @@ foreach ($records as $record) {
 <?php
     print(sprintf("%d/%d field(s) filled out", $n, $nmax));
     print(sprintf("<br><b>%d field(s) need to be filled out:</b><br>", $nmax));
-    print('<em>' . implode(",", $all_fields) . '</em>');
+    print('<em>' . implode(", ", $all_fields) . '</em>');
 ?>
                         </div>
                     </td>
-                    <td style="cursor:initial;">
-                        <div style="width:600px;">
+                    <td style="cursor:initial;white-space:normal;">
+                        <div style="width:550px;">
                             <span span_id="<?= $record ?>" span_record_complete="<?= ($nmax == $n) ? 1: 0 ?>">
                             </span>
+                            <i spinner_id="<?= $record ?>" class="fa-solid fa-spinner fa-spin-pulse" style="display:none;"></i>
                         </div>
                     </td>
                 </tr>
